@@ -38,9 +38,76 @@ The work that went into creating this plug-in was inspired by the existing plugi
 
 ## How to install it
 
-  cordova plugins add cordova-plugin-shortcuts-android
+  ionic cordova plugins add cordova-plugin-shortcuts-android
 
 ## How to use it
+
+### Sample Usage
+
+The sample usage using 2 page with class name is `HomePage` and `Halaman2Page`
+
+```javascript
+import { Component } from '@angular/core';
+import { NavController, Platform } from 'ionic-angular';
+
+@Component({
+  selector: 'page-home',
+  templateUrl: 'home.html'
+})
+export class HomePage {
+  info: any = {}
+
+  constructor(public navCtrl: NavController, public plt: Platform) {
+    this.info.target = ""
+    this.plt.ready().then((readySource) => {
+      this.checkShortCut();
+    });
+  }
+
+  checkShortCut() {
+    var target = ""
+    window['plugins'].Shortcuts.getIntent(function (intent) {
+      target = intent.extras['android.intent.extra.SUBJECT'] //get tujuan halaman
+    });
+
+    setTimeout(() => {
+      if (target != "") {
+        this.navCtrl.push(target);
+      }
+    }, 0);
+  }
+
+  //detail shortcut yang dibuat
+  shortcut: any = {
+    id: 'my_shortcut_2',//beda id beda shortcut
+    shortLabel: 'page2',
+    longLabel: 'Halaman2',
+    intent: {
+      action: 'android.intent.action.RUN',
+      categories: [
+        'android.intent.category.TEST',
+        'MY_CATEGORY'
+      ],
+      flags: 67108864, // FLAG_ACTIVITY_CLEAR_TOP
+      data: 'myapp://Halaman2Page',
+      extras: {
+        'android.intent.extra.SUBJECT': 'Halaman2Page', //Tujuan Halaman
+        'MY_BOOLEAN': true, // Custom extras (boolean, number and string)
+      }
+    }
+  }
+
+  makeShortcut() {// membuat shortcut berdasartombol yang di klik
+    window['plugins'].Shortcuts.addPinned(this.shortcut, function () {
+      window.alert('Shortcut pinned successfully');
+    }, function (error) {
+      window.alert('Error: ' + error);
+    })
+  }
+
+}
+
+```
 
 ### Checking if Dynamic Shortcuts are supported
 
