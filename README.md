@@ -44,7 +44,7 @@ The work that went into creating this plug-in was inspired by the existing plugi
 
 ### Sample Usage
 
-The sample usage using 2 page with class name is `HomePage` and `Halaman2Page`
+The sample usage using 3 page with class name is `HomePage`, `Halaman2Page`, dan `Halaman3Page`
 
 ```javascript
 import { Component } from '@angular/core';
