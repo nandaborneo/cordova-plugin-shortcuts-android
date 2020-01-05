@@ -66,19 +66,30 @@ export class HomePage {
 
   checkShortCut() {
     var target = ""
-    window['plugins'].Shortcuts.getIntent(function (intent) {
+    var isPaused = true;
+    window['plugins'].Shortcuts.getIntent(function (intent) {// berjalan ketika aplikasi sudah di close
       target = intent.extras['android.intent.extra.SUBJECT'] //get tujuan halaman
+      isPaused = false;
     });
 
-    setTimeout(() => {
-      if (target != "") {
-        this.navCtrl.push(target);
+    window['plugins'].Shortcuts.onNewIntent(function (intent) {//berjalan ketika aplikasi belum di close
+      target = intent.extras['android.intent.extra.SUBJECT'] //get tujuan halaman
+      isPaused = false;
+    })
+
+    setInterval(() => {
+      if(!isPaused){
+        if (target != undefined) {
+          if(this.navCtrl.getActive().name !== target)//untuk mengatasi shortcut menumpuk halaman yang sama
+            this.navCtrl.push(target);
+          isPaused = true;
+        }
       }
-    }, 0);
+    }, 5);
   }
 
   //detail shortcut yang dibuat
-  shortcut: any = {
+  shortcut2: any = {
     id: 'my_shortcut_2',//beda id beda shortcut
     shortLabel: 'page2',
     longLabel: 'Halaman2',
@@ -97,8 +108,34 @@ export class HomePage {
     }
   }
 
-  makeShortcut() {// membuat shortcut berdasartombol yang di klik
-    window['plugins'].Shortcuts.addPinned(this.shortcut, function () {
+  shortcut3: any = {
+    id: 'my_shortcut_3',//beda id beda shortcut
+    shortLabel: 'page3',
+    longLabel: 'Halaman3',
+    intent: {
+      action: 'android.intent.action.RUN',
+      categories: [
+        'android.intent.category.TEST',
+        'MY_CATEGORY'
+      ],
+      flags: 67108864, // FLAG_ACTIVITY_CLEAR_TOP
+      data: 'myapp://Halaman3Page',
+      extras: {
+        'android.intent.extra.SUBJECT': 'Halaman3Page', //Tujuan Halaman
+        'MY_BOOLEAN': true, // Custom extras (boolean, number and string)
+      }
+    }
+  }
+
+  makeShortcut2() {// membuat shortcut berdasartombol yang di klik
+    window['plugins'].Shortcuts.addPinned(this.shortcut2, function () {
+      window.alert('Shortcut pinned successfully');
+    }, function (error) {
+      window.alert('Error: ' + error);
+    })
+  }
+  makeShortcut3() {// membuat shortcut berdasartombol yang di klik
+    window['plugins'].Shortcuts.addPinned(this.shortcut3, function () {
       window.alert('Shortcut pinned successfully');
     }, function (error) {
       window.alert('Error: ' + error);
